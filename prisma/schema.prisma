@@ -1,0 +1,18 @@
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "postgresql"
+}
+
+model Photo {
+    id          String   @id @default(uuid())
+    title       String
+    category    String // Ex: Musique, Mariage, etc.
+    location    String? // Ex: Stade de Dillon, Fort-de-France
+    description String?
+    imageUrl    String
+    publicId    String
+    createdAt   DateTime @default(now())
+}
