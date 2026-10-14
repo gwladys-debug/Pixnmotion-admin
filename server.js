@@ -15,9 +15,35 @@ const prisma = new PrismaClient({
   },
 });
 
-app.use(cors({ origin: 'http://localhost:5173' }));
+// Autoriser CORS pour Vite (dev server sur 5173)
+app.use(cors({ 
+  origin: 'http://localhost:5173',
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
+
 app.use(express.json());
 
+// 1. Route racine pour tester le serveur
+app.get('/', (req, res) => {
+  res.send('API Pix\'n Motion fonctionnelle !');
+});
+
+// 2. Route GET pour récupérer les photos depuis Neon via Prisma
+app.get('/api/photos', async (req, res) => {
+  try {
+    const photos = await prisma.photo.findMany({
+      orderBy: { createdAt: 'desc' }
+    });
+    res.json(photos);
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.error(e);
+    res.status(500).json({ error: 'Erreur lors de la récupération des photos' });
+  }
+});
+
+// 3. Route POST pour enregistrer un événement avec ses photos
 app.post('/api/photos', async (req, res) => {
   const { title, category, location, description, images } = req.body;
 
