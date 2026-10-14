@@ -154,19 +154,24 @@ function PhotoUploadPage() {
     if (images.length === 0 || !title || !category) return;
 
     try {
-      const response = await fetch('http://localhost:3001/api/photos', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          title,
-          category,
-          location,
-          description,
-          images,
-        }),
-      });
+  // Détermine dynamiquement l'URL de l'API selon l'environnement
+  const apiUrl = import.meta.env.VITE_API_URL 
+    ? `${import.meta.env.VITE_API_URL}/api/photos` 
+    : '/api/photos';
+
+  const response = await fetch(apiUrl, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      title,
+      category,
+      location,
+      description,
+      images,
+    }),
+  });
 
       const data = await response.json();
       if (response.ok) {
