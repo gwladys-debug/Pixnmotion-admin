@@ -9,7 +9,6 @@ interface AdminProtectionProps {
 }
 
 export function AdminProtection({ children }: AdminProtectionProps) {
-  // Initialisation directe de l'état sans useEffect
   const [isAuthenticated, setIsAuthenticated] = useState(() => {
     return sessionStorage.getItem('pix_admin_auth') === 'true';
   });
@@ -18,8 +17,8 @@ export function AdminProtection({ children }: AdminProtectionProps) {
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    const correctPin = import.meta.env.VITE_ADMIN_PIN || '1234';
-
+    const correctPin ='Pix@2016Shadcn';
+    
     if (pin === correctPin) {
       setIsAuthenticated(true);
       sessionStorage.setItem('pix_admin_auth', 'true');
@@ -30,12 +29,10 @@ export function AdminProtection({ children }: AdminProtectionProps) {
     }
   };
 
-  // Si l'utilisateur est authentifié, on affiche le formulaire d'upload
   if (isAuthenticated) {
     return <>{children}</>;
   }
 
-  // Sinon, on affiche l'écran de verrouillage par code PIN
   return (
     <div className="flex items-center justify-center min-h-screen bg-background p-4">
       <Card className="w-full max-w-md shadow-lg">
@@ -45,7 +42,7 @@ export function AdminProtection({ children }: AdminProtectionProps) {
           </div>
           <CardTitle className="text-xl">Administration - Pix'n Motion</CardTitle>
           <p className="text-sm text-muted-foreground">
-            Veuillez entrer votre code PIN secret pour accéder à l'espace de gestion.
+            Entrez votre code PIN secret pour accéder à l'espace de gestion.
           </p>
         </CardHeader>
         <CardContent>
@@ -53,7 +50,7 @@ export function AdminProtection({ children }: AdminProtectionProps) {
             <div className="space-y-2">
               <Input
                 type="password"
-                placeholder="Entrez le code PIN..."
+                placeholder="Code PIN..."
                 value={pin}
                 onChange={(e) => setPin(e.target.value)}
                 maxLength={10}

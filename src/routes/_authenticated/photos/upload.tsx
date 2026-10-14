@@ -8,7 +8,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { X } from 'lucide-react';
 import { AdminProtection } from '@/components/AdminProtection';
 
-// On enveloppe directement le composant de la page dans la protection par code PIN
 export const Route = createFileRoute('/_authenticated/photos/upload')({
   component: () => (
     <AdminProtection>
@@ -32,10 +31,9 @@ const CATEGORIES = [
   'Musique',
 ];
 
-// Fonction utilitaire pour compresser l'image dans le navigateur avant l'upload
+// Compression d'image dans le navigateur pour éviter les fichiers trop lourds
 const compressImage = (file: File): Promise<File> => {
   return new Promise((resolve) => {
-    // Si ce n'est pas une image, on retourne le fichier tel quel
     if (!file.type.startsWith('image/')) {
       resolve(file);
       return;
@@ -51,7 +49,6 @@ const compressImage = (file: File): Promise<File> => {
         let width = img.width;
         let height = img.height;
 
-        // Dimensions maximales autorisées pour le web (Full HD)
         const MAX_WIDTH = 1920;
         const MAX_HEIGHT = 1080;
 
@@ -81,11 +78,11 @@ const compressImage = (file: File): Promise<File> => {
               });
               resolve(compressedFile);
             } else {
-              resolve(file); // Sécurité de repli
+              resolve(file);
             }
           },
           'image/jpeg',
-          0.8 // Qualité à 80% (réduit considérablement le poids sans perte visible)
+          0.8
         );
       };
     };
@@ -115,14 +112,12 @@ function PhotoUploadPage() {
 
     try {
       for (const file of Array.from(files)) {
-        // 1. Compression automatique de l'image avant l'envoi
         const compressedFile = await compressImage(file);
 
         const formData = new FormData();
         formData.append('file', compressedFile);
         formData.append('upload_preset', uploadPreset);
 
-        // 2. Envoi vers Cloudinary
         const res = await fetch(
           `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
           { method: 'POST', body: formData }
@@ -254,7 +249,11 @@ function PhotoUploadPage() {
                 multiple
                 onChange={handleImageUpload}
               />
-              {uploading && <p className="text-sm text-muted-foreground">Compression et téléchargement des photos en cours...</p>}
+              {uploading && (
+                <p className="text-sm text-muted-foreground">
+                  Compression et téléchargement des photos en cours...
+                </p>
+              )}
               
               {uploadError && (
                 <p className="text-sm text-red-500 font-medium">{uploadError}</p>
@@ -278,7 +277,7 @@ function PhotoUploadPage() {
               )}
             </div>
 
-            <Button type="submit" disabled={uploading || images.length === 0} className="w-full">
+            <Button type="submit" disabled={uploading || images.length === 0} className="W-full">
               Enregistrer l'événement ({images.length} photo{images.length > 1 ? 's' : ''})
             </Button>
           </form>
