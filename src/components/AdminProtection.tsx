@@ -17,7 +17,7 @@ export function AdminProtection({ children }: AdminProtectionProps) {
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    const correctPin = 'Pix@2016Shadcn';
+    const correctPin = '1234';
     
     // eslint-disable-next-line no-console
     console.log("Valeur tapée :", pin, "Valeur attendue :", correctPin);
