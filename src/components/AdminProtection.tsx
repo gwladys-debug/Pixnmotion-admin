@@ -17,7 +17,7 @@ export function AdminProtection({ children }: AdminProtectionProps) {
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    const correctPin ='Pix@2016Shadcn';
+    const correctPin = 'Pix@2016Shadcn';
     
     if (pin === correctPin) {
       setIsAuthenticated(true);
