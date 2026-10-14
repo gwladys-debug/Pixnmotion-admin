@@ -47,12 +47,14 @@ const profileFormSchema = z.object({
 
 type ProfileFormValues = z.infer<typeof profileFormSchema>
 
-// This can come from your database or API.
+// Valeurs par défaut personnalisées pour Pix'n Motion
 const defaultValues: Partial<ProfileFormValues> = {
-  bio: 'I own a computer.',
+  username: "Pix'n Motion",
+  email: 'pixnmotion.co@gmail.com',
+  bio: 'Production audiovisuelle et reportages photographiques en Martinique.',
   urls: [
-    { value: 'https://shadcn.com' },
-    { value: 'http://twitter.com/shadcn' },
+    { value: 'https://pixnmotion.com' },
+    { value: 'https://instagram.com/pixnmotion' },
   ],
 }
 
@@ -79,13 +81,12 @@ export function ProfileForm() {
           name='username'
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Username</FormLabel>
+              <FormLabel>Nom d'utilisateur</FormLabel>
               <FormControl>
-                <Input placeholder='shadcn' {...field} />
+                <Input placeholder="Pix'n Motion" {...field} />
               </FormControl>
               <FormDescription>
-                This is your public display name. It can be your real name or a
-                pseudonym. You can only change this once every 30 days.
+                C'est votre nom d'affichage public. Il peut s'agir de votre vrai nom ou d'un pseudonyme.
               </FormDescription>
               <FormMessage />
             </FormItem>
@@ -100,18 +101,16 @@ export function ProfileForm() {
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
                   <SelectTrigger>
-                    <SelectValue placeholder='Select a verified email to display' />
+                    <SelectValue placeholder='Sélectionnez une adresse e-mail' />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  <SelectItem value='m@example.com'>m@example.com</SelectItem>
-                  <SelectItem value='m@google.com'>m@google.com</SelectItem>
-                  <SelectItem value='m@support.com'>m@support.com</SelectItem>
+                  <SelectItem value='pixnmotion.co@gmail.com'>pixnmotion.co@gmail.com</SelectItem>
                 </SelectContent>
               </Select>
               <FormDescription>
-                You can manage verified email addresses in your{' '}
-                <Link to='/'>email settings</Link>.
+                Vous pouvez gérer vos adresses e-mail vérifiées dans vos{' '}
+                <Link to='/'>paramètres d'e-mail</Link>.
               </FormDescription>
               <FormMessage />
             </FormItem>
@@ -125,14 +124,13 @@ export function ProfileForm() {
               <FormLabel>Bio</FormLabel>
               <FormControl>
                 <Textarea
-                  placeholder='Tell us a little bit about yourself'
+                  placeholder='Parlez-nous un peu de vous'
                   className='resize-none'
                   {...field}
                 />
               </FormControl>
               <FormDescription>
-                You can <span>@mention</span> other users and organizations to
-                link to them.
+                Présentez brièvement votre activité de production et de photographie.
               </FormDescription>
               <FormMessage />
             </FormItem>
@@ -150,7 +148,7 @@ export function ProfileForm() {
                     URLs
                   </FormLabel>
                   <FormDescription className={cn(index !== 0 && 'sr-only')}>
-                    Add links to your website, blog, or social media profiles.
+                    Ajoutez des liens vers votre site web, blog ou réseaux sociaux.
                   </FormDescription>
                   <FormControl className={cn(index !== 0 && 'mt-1.5')}>
                     <Input {...field} />
@@ -167,10 +165,10 @@ export function ProfileForm() {
             className='mt-2'
             onClick={() => append({ value: '' })}
           >
-            Add URL
+            Ajouter une URL
           </Button>
         </div>
-        <Button type='submit'>Update profile</Button>
+        <Button type='submit'>Mettre à jour le profil</Button>
       </form>
     </Form>
   )
