@@ -19,6 +19,9 @@ export function AdminProtection({ children }: AdminProtectionProps) {
     e.preventDefault();
     const correctPin = 'Pix@2016Shadcn';
     
+    // eslint-disable-next-line no-console
+    console.log("Valeur tapée :", pin, "Valeur attendue :", correctPin);
+    
     if (pin === correctPin) {
       setIsAuthenticated(true);
       sessionStorage.setItem('pix_admin_auth', 'true');
