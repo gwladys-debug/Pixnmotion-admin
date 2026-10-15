@@ -27,7 +27,7 @@ const CATEGORIES = [
   'Corporate',
   'Mariage',
   'Évènementiel',
-  'Shooting',
+  'Shooting photo',
   'Musique',
 ];
 

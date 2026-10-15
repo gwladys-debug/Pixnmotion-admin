@@ -9,7 +9,7 @@ export default function PhotoUploadPage() {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [imageUrl, setImageUrl] = useState('');
-  const [publicId, setPublicId] = useState('');
+  const [_publicId, setPublicId] = useState('');
   const [uploading, setUploading] = useState(false);
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -34,8 +34,8 @@ export default function PhotoUploadPage() {
         setImageUrl(data.secure_url);
         setPublicId(data.public_id);
       }
-    } catch (error) {
-      console.error('Erreur Cloudinary:', error);
+    } catch {
+      alert('Erreur lors du téléchargement de l’image.');
     } finally {
       setUploading(false);
     }
@@ -46,7 +46,6 @@ export default function PhotoUploadPage() {
     if (!imageUrl || !title) return;
 
     // Ici, vous appellerez votre API backend (ou endpoint Node.js) qui utilise Prisma pour sauvegarder en base
-    console.log({ title, description, imageUrl, publicId });
     alert('Image prête à être enregistrée en base !');
   };
 
