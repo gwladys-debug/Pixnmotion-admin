@@ -56,7 +56,7 @@ export function AdminProtection({ children }: AdminProtectionProps) {
                 placeholder="Code PIN..."
                 value={pin}
                 onChange={(e) => setPin(e.target.value)}
-                maxLength={10}
+                maxLength={30}
                 autoFocus
                 className="text-center tracking-widest text-lg"
               />
