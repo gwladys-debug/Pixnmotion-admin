@@ -149,29 +149,33 @@ function PhotoUploadPage() {
     setImages(images.filter((_, index) => index !== indexToRemove));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (images.length === 0 || !title || !category) return;
 
     try {
-  // Détermine dynamiquement l'URL de l'API selon l'environnement
-  const apiUrl = import.meta.env.VITE_API_URL 
-    ? `${import.meta.env.VITE_API_URL}/api/photos` 
-    : '/api/photos';
+      // Récupère le code PIN stocké lors de l'authentification admin
+      const pin = sessionStorage.getItem('admin_pin') || '';
 
-  const response = await fetch(apiUrl, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      title,
-      category,
-      location,
-      description,
-      images,
-    }),
-  });
+      // Détermine dynamiquement l'URL de l'API selon l'environnement
+      const apiUrl = import.meta.env.VITE_API_URL 
+        ? `${import.meta.env.VITE_API_URL}/api/photos` 
+        : '/api/photos';
+
+      const response = await fetch(apiUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-admin-pin': pin, // Envoi du PIN de sécurité requis par l'API
+        },
+        body: JSON.stringify({
+          title,
+          category,
+          location,
+          description,
+          photos: images, // Tableau des images Cloudinary (url et publicId)
+        }),
+      });
 
       const data = await response.json();
       if (response.ok) {
@@ -189,7 +193,6 @@ function PhotoUploadPage() {
       alert("Impossible de contacter le serveur d'API.");
     }
   };
-
   return (
     <div className="p-6 max-w-2xl mx-auto">
       <Card>
