@@ -55,9 +55,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     return res.status(200).json({ success: true, message: 'Photos enregistrées avec succès !' });
-  } catch (error: any) {
+  } catch (error: unknown) {
     // eslint-disable-next-line no-console
     console.error('Erreur lors de l’enregistrement dans Neon :', error);
-    return res.status(500).json({ error: error.message || 'Erreur interne du serveur' });
+    return res.status(500).json({
+      error: error instanceof Error ? error.message : 'Erreur interne du serveur',
+    });
   }
 }
