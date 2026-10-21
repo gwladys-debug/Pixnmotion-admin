@@ -23,6 +23,7 @@ export function AdminProtection({ children }: AdminProtectionProps) {
       setIsAuthenticated(true);
       sessionStorage.setItem('pix_admin_auth', 'true');
       sessionStorage.setItem('admin_pin', pin.trim());
+      sessionStorage.setItem('admin_pin', pin.trim());
       setError(false);
     } else {
       setError(true);
