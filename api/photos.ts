@@ -35,14 +35,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         return res.status(400).json({ error: 'Données manquantes ou incomplètes' });
       }
 
-      // Enregistrement dans Neon via Prisma
+// Enregistrement dans Neon via Prisma
       await prisma.photo.createMany({
         data: photos.map((img: { url?: string; imageUrl?: string; publicId: string }) => ({
           title,
           category,
           location: location || null,
           description: description || null,
-          imageUrl: img.url || img.imageUrl,
+          imageUrl: img.url || img.imageUrl || '', // Garantit une chaîne de caractères
           publicId: img.publicId,
         })),
       });
