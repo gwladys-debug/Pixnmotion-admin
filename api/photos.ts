@@ -50,7 +50,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(201).json({ success: true });
     } catch (error) {
       console.error('Erreur Prisma:', error);
-      return res.status(500).json({ error: 'Erreur lors de l’enregistrement en base de données' });
+      return res.status(500).json({
+        error: 'Erreur lors de l’enregistrement en base de données',
+        details: error instanceof Error ? error.message : String(error),
+      });
     }
   }
 
