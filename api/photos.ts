@@ -1,10 +1,8 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { neon } from '@neondatabase/serverless';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  // 1. Gestion des en-têtes CORS
+  // Configuration des en-têtes CORS
   res.setHeader('Access-Control-Allow-Credentials', 'true');
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
@@ -13,49 +11,53 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, x-admin-pin'
   );
 
-  // 2. Répondre immédiatement aux requêtes OPTIONS (Preflight)
   if (req.method === 'OPTIONS') {
-    return res.status(200).end();
+    res.status(200).end();
+    return;
   }
 
-  // 3. Sécurité : Vérification du code PIN administrateur
- const adminPin = req.headers['x-admin-pin'];
-  const expectedPin = process.env.ADMIN_SECRET_PASSWORD;
-
-  if (!expectedPin || !adminPin || adminPin !== expectedPin) {
-  return res.status(401).json({ error: 'Code PIN administrateur incorrect' });
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Méthode non autorisée' });
   }
 
-  // 4. Enregistrement des photos (POST)
-  if (req.method === 'POST') {
-    try {
-      const { title, category, location, description, photos } = req.body;
+  // 1. Vérification du code PIN administrateur
+  const adminPin = req.headers['x-admin-pin'];
+  const expectedPin = process.env.ADMIN_SECRET_PASSWORD || process.env.ADMIN_PIN;
 
-      if (!title || !category || !Array.isArray(photos) || photos.length === 0) {
-        return res.status(400).json({ error: 'Données manquantes ou incomplètes' });
-      }
+  if (!adminPin || adminPin !== expectedPin) {
+    return res.status(401).json({ error: 'Code PIN administrateur incorrect' });
+  }
 
-      // Enregistrement dans Neon via Prisma avec correction du type string pour imageUrl
-      await prisma.photo.createMany({
-        data: photos.map((img: { url?: string; imageUrl?: string; publicId: string }) => ({
-          title,
-          category,
-          location: location || null,
-          description: description || null,
-          imageUrl: img.url || img.imageUrl || '',
-          publicId: img.publicId,
-        })),
-      });
+  const { title, category, location, description, photos } = req.body;
 
-      return res.status(201).json({ success: true });
-    } catch (error) {
-      console.error('Erreur Prisma:', error);
-      return res.status(500).json({
-        error: 'Erreur lors de l’enregistrement en base de données',
-        details: error instanceof Error ? error.message : String(error),
-      });
+  if (!title || !category || !photos || !Array.isArray(photos) || photos.length === 0) {
+    return res.status(400).json({ error: 'Données manquantes (titre, catégorie ou photos)' });
+  }
+
+  try {
+    // 2. Connexion directe à Neon via le client serverless
+    const sql = neon(process.env.DATABASE_URL!);
+
+    // 3. Insertion de l'événement et de ses photos dans la base de données
+    for (const img of photos) {
+      await sql`
+        INSERT INTO "Photo" (id, title, description, "imageUrl", "publicId", category, location)
+        VALUES (
+          gen_random_uuid()::text, 
+          ${title}, 
+          ${description || null}, 
+          ${img.url || img.imageUrl || ''}, 
+          ${img.publicId}, 
+          ${category}, 
+          ${location || null}
+        )
+      `;
     }
-  }
 
-  return res.status(405).json({ error: 'Méthode non autorisée' });
+    return res.status(200).json({ success: true, message: 'Photos enregistrées avec succès !' });
+  } catch (error: any) {
+    // eslint-disable-next-line no-console
+    console.error('Erreur lors de l’enregistrement dans Neon :', error);
+    return res.status(500).json({ error: error.message || 'Erreur interne du serveur' });
+  }
 }
