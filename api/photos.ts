@@ -19,11 +19,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   // 3. Sécurité : Vérification du code PIN administrateur
-  const adminPin = req.headers['x-admin-pin'];
-  const expectedPin = process.env.ADMIN_PIN || process.env.VITE_ADMIN_PIN;
+ const adminPin = req.headers['x-admin-pin'];
+  const expectedPin = process.env.ADMIN_SECRET_PASSWORD;
 
-  if (!adminPin || adminPin !== expectedPin) {
-    return res.status(401).json({ error: 'Code PIN administrateur incorrect' });
+  if (!expectedPin || !adminPin || adminPin !== expectedPin) {
+  return res.status(401).json({ error: 'Code PIN administrateur incorrect' });
   }
 
   // 4. Enregistrement des photos (POST)
