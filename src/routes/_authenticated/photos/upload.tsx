@@ -154,26 +154,20 @@ const handleSubmit = async (e: React.FormEvent) => {
     if (images.length === 0 || !title || !category) return;
 
     try {
-      // Récupère le code PIN stocké lors de l'authentification admin
       const pin = sessionStorage.getItem('admin_pin') || '';
 
-      // Détermine dynamiquement l'URL de l'API selon l'environnement
-      const apiUrl = import.meta.env.VITE_API_URL 
-        ? `${import.meta.env.VITE_API_URL}/api/photos` 
-        : '/api/photos';
-
-      const response = await fetch(apiUrl, {
+      const response = await fetch('/api/photos', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'x-admin-pin': pin, // Envoi du PIN de sécurité requis par l'API
+          'x-admin-pin': pin,
         },
         body: JSON.stringify({
           title,
           category,
           location,
           description,
-          photos: images, // Tableau des images Cloudinary (url et publicId)
+          photos: images,
         }),
       });
 
