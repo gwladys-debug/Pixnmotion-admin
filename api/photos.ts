@@ -6,7 +6,7 @@ const prisma = new PrismaClient();
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   // 1. Gestion des en-têtes CORS
   res.setHeader('Access-Control-Allow-Credentials', 'true');
-  res.setHeader('Access-Control-Allow-Origin', '*'); // Ou 'https://pixnmotion-admin.vercel.app'
+  res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
   res.setHeader(
     'Access-Control-Allow-Headers',
@@ -35,14 +35,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         return res.status(400).json({ error: 'Données manquantes ou incomplètes' });
       }
 
-// Enregistrement dans Neon via Prisma
+      // Enregistrement dans Neon via Prisma avec correction du type string pour imageUrl
       await prisma.photo.createMany({
         data: photos.map((img: { url?: string; imageUrl?: string; publicId: string }) => ({
           title,
           category,
           location: location || null,
           description: description || null,
-          imageUrl: img.url || img.imageUrl || '', // Garantit une chaîne de caractères
+          imageUrl: img.url || img.imageUrl || '',
           publicId: img.publicId,
         })),
       });
